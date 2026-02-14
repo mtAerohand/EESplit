@@ -1168,7 +1168,7 @@ function SegmentsTable({
                                             editorState.segments[segmentIndex].segment_time
                                         );
                                         const avg = calculateAvgSecondsPerElite(segmentTime, eliteCount);
-                                        return formatAvgSecondsPerElite(avg);
+                                        return formatAvgSecondsPerElite(avg, lang, resolve, Label);
                                     })()}
                                 </span>
                             </td>

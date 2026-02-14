@@ -116,6 +116,7 @@ function toTraditional(value: string): string {
         case Label.EliteHighlightRankDescription: return "Highlight bottom N ranked segments.";
         case Label.EliteHighlightThreshold: return "Threshold (sec/elite)";
         case Label.EliteHighlightThresholdDescription: return "Highlight segments with average seconds per elite above this value.";
+        case Label.EliteAvgFormatUnit: return "sec/elite";
     }
     return result;
 }

@@ -81,10 +81,14 @@ export function setSegmentEliteCount(
     // Set as permanent custom variable (saved with run)
     editor.setCustomVariable(key, value);
 
-    // Note: setCustomVariableIsPermanent may not exist in all versions
-    // The variable should be permanent by default in metadata
-    if (typeof (editor as any).setCustomVariableIsPermanent === 'function') {
-        (editor as any).setCustomVariableIsPermanent(key, true);
+    // setCustomVariableIsPermanent is not in the TypeScript bindings but may exist at runtime
+    // Variables stored in metadata.custom_variables are permanent by default
+    // This is a defensive check for forward compatibility
+    const editorWithPermanent = editor as unknown as {
+        setCustomVariableIsPermanent?: (key: string, isPermanent: boolean) => void;
+    };
+    if (typeof editorWithPermanent.setCustomVariableIsPermanent === 'function') {
+        editorWithPermanent.setCustomVariableIsPermanent(key, true);
     }
 }
 
@@ -118,14 +122,21 @@ export function calculateAvgSecondsPerElite(
 
 /**
  * Format average seconds per elite for display
+ * @param avgSeconds Average seconds value
+ * @param lang Language for localization
+ * @param resolve Localization resolver function
  */
 export function formatAvgSecondsPerElite(
     avgSeconds: number | undefined,
+    lang: any,
+    resolve: (label: any, lang: any) => string,
+    Label: any,
 ): string {
     if (avgSeconds === undefined) {
         return "—";
     }
-    return `${avgSeconds.toFixed(1)}秒/体`;
+    const unit = resolve(Label.EliteAvgFormatUnit, lang);
+    return `${avgSeconds.toFixed(1)}${unit}`;
 }
 
 /**
