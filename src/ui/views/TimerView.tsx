@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import {
     TimingMethod,
     TimeSpan,
@@ -109,13 +109,11 @@ function View({
     const showManualGameTime = generalSettings.showManualGameTime;
     const lang = generalSettings.lang;
 
-    // Calculate elite counts for EliteCounter (memoized for performance)
+    // Calculate elite counts for EliteCounter
+    // Note: These calculations are lightweight (O(segments)) and run on each render
     const run = commandSink.getRun();
-    const totalEliteCount = useMemo(() => getTotalEliteCountFromRun(run), [run]);
-    const completedEliteCount = useMemo(
-        () => getCompletedEliteCountFromRun(run, currentSplitIndex),
-        [run, currentSplitIndex],
-    );
+    const totalEliteCount = getTotalEliteCountFromRun(run);
+    const completedEliteCount = getCompletedEliteCountFromRun(run, currentSplitIndex);
 
     return (
         <DragUpload
