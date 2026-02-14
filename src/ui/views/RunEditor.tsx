@@ -1363,6 +1363,11 @@ function VariablesTab({
     }
 
     for (const customVariableName of Object.keys(metadata.custom_variables)) {
+        // Filter out internal elite count variables
+        if (customVariableName.startsWith("__elite_count_seg_")) {
+            continue;
+        }
+
         const customVariableValue =
             metadata.custom_variables[customVariableName];
         if (customVariableValue && customVariableValue.is_permanent) {

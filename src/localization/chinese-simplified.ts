@@ -306,5 +306,19 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.BugReportInstructions: return "为帮助我们修复此问题，请提供复现步骤，并附上问题发生时你使用的分段和布局。";
         case Label.LoadFailedPrivateBrowsing: return "无法加载 LiveSplit One。\n你可能处于无痕/隐私浏览模式。\n由于浏览器隐私模式的限制，LiveSplit One 无法存储分段、布局或其他设置。\n这些限制可能会在未来解除。\n要继续使用 LiveSplit One，请在设置中关闭隐私浏览。";
         case Label.LoadFailedOutdatedBrowser: return "无法加载 LiveSplit One。\n你的浏览器可能不是最新版本。\n请更新浏览器或 iOS 版本后重试。\n另一种可能是浏览器扩展（如广告拦截器）阻止了重要脚本的访问。";
+        // Elite Counter labels (English fallback)
+        case Label.EliteCounter: return "Elite Counter";
+        case Label.EliteCount: return "Elite Count";
+        case Label.TotalEliteCount: return "Total Elites";
+        case Label.AvgSecondsPerElite: return "Avg Sec/Elite";
+        case Label.EliteCounterHeading: return "Elite Counter Settings";
+        case Label.EliteHighlightMode: return "Highlight Mode";
+        case Label.EliteHighlightModeDescription: return "Choose how to highlight segments with poor performance.";
+        case Label.EliteHighlightPercentage: return "Bottom Percentage";
+        case Label.EliteHighlightPercentageDescription: return "Highlight bottom N% of segments (e.g., 20 for bottom 20%).";
+        case Label.EliteHighlightRank: return "Bottom Rank";
+        case Label.EliteHighlightRankDescription: return "Highlight bottom N ranked segments.";
+        case Label.EliteHighlightThreshold: return "Threshold (sec/elite)";
+        case Label.EliteHighlightThresholdDescription: return "Highlight segments with average seconds per elite above this value.";
     }
 }

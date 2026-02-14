@@ -306,5 +306,19 @@ export function resolveKorean(text: Label): string {
         case Label.BugReportInstructions: return "이 문제를 해결하는 데 도움이 되도록 재현 절차를 포함하고 문제가 발생했을 때 사용하던 스플릿과 레이아웃을 첨부해 주세요.";
         case Label.LoadFailedPrivateBrowsing: return "LiveSplit One을 불러올 수 없습니다.\n시크릿/프라이빗 브라우징 모드일 수 있습니다.\n브라우저의 프라이빗 모드 제한으로 인해 LiveSplit One은 스플릿, 레이아웃 또는 다른 설정을 저장할 수 없습니다.\n이 제한은 향후 해제될 수 있습니다.\n지금 LiveSplit One을 사용하려면 설정에서 프라이빗 브라우징을 비활성화해 주세요.";
         case Label.LoadFailedOutdatedBrowser: return "LiveSplit One을 불러올 수 없습니다.\n브라우저가 최신 버전이 아닐 수 있습니다.\n브라우저 또는 iOS 버전을 업데이트한 후 다시 시도해 주세요.\n또 다른 이유로는 광고 차단기 같은 브라우저 확장 프로그램이 중요한 스크립트에 대한 접근을 차단하고 있을 수 있습니다.";
+        // Elite Counter labels (English fallback)
+        case Label.EliteCounter: return "Elite Counter";
+        case Label.EliteCount: return "Elite Count";
+        case Label.TotalEliteCount: return "Total Elites";
+        case Label.AvgSecondsPerElite: return "Avg Sec/Elite";
+        case Label.EliteCounterHeading: return "Elite Counter Settings";
+        case Label.EliteHighlightMode: return "Highlight Mode";
+        case Label.EliteHighlightModeDescription: return "Choose how to highlight segments with poor performance.";
+        case Label.EliteHighlightPercentage: return "Bottom Percentage";
+        case Label.EliteHighlightPercentageDescription: return "Highlight bottom N% of segments (e.g., 20 for bottom 20%).";
+        case Label.EliteHighlightRank: return "Bottom Rank";
+        case Label.EliteHighlightRankDescription: return "Highlight bottom N ranked segments.";
+        case Label.EliteHighlightThreshold: return "Threshold (sec/elite)";
+        case Label.EliteHighlightThresholdDescription: return "Highlight segments with average seconds per elite above this value.";
     }
 }
