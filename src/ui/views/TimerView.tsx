@@ -37,6 +37,11 @@ import * as classes from "../../css/TimerView.module.scss";
 import * as sidebarClasses from "../../css/Sidebar.module.scss";
 import * as buttonGroupClasses from "../../css/ButtonGroup.module.scss";
 import { Label, orAutoLang, resolve } from "../../localization";
+import { EliteCounter } from "../components/EliteCounter";
+import {
+    getTotalEliteCountFromRun,
+    getCompletedEliteCountFromRun,
+} from "../../util/EliteCalculations";
 
 export interface Props {
     isDesktop: boolean;
@@ -104,6 +109,12 @@ function View({
     const showManualGameTime = generalSettings.showManualGameTime;
     const lang = generalSettings.lang;
 
+    // Calculate elite counts for EliteCounter
+    // Note: These calculations are lightweight (O(segments)) and run on each render
+    const run = commandSink.getRun();
+    const totalEliteCount = getTotalEliteCountFromRun(run);
+    const completedEliteCount = getCompletedEliteCountFromRun(run, currentSplitIndex);
+
     return (
         <DragUpload
             importLayout={(file) => callbacks.importLayoutFromFile(file)}
@@ -151,6 +162,16 @@ function View({
                         window={window}
                     />
                 </div>
+                {/* Elite Counter Display */}
+                {totalEliteCount > 0 && (
+                    <div style={{ width: layoutWidth, margin: "0 auto" }}>
+                        <EliteCounter
+                            current={completedEliteCount}
+                            total={totalEliteCount}
+                            lang={lang}
+                        />
+                    </div>
+                )}
             </div>
             {generalSettings.showControlButtons && (
                 <div className={classes.buttons} style={{ width: layoutWidth }}>

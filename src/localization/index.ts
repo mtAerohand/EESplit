@@ -334,6 +334,7 @@ export enum Label {
     EliteHighlightThreshold,
     EliteHighlightThresholdDescription,
     EliteAvgFormatUnit,
+    EliteUnitCount,
 }
 
 export function resolve(text: Label, lang: Language | undefined): string {

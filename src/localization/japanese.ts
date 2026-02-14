@@ -321,5 +321,6 @@ export function resolveJapanese(text: Label): string {
         case Label.EliteHighlightThreshold: return "閾値（秒/体）";
         case Label.EliteHighlightThresholdDescription: return "この値以上の平均討伐秒数を持つ区間をハイライトします。";
         case Label.EliteAvgFormatUnit: return "秒/体";
+        case Label.EliteUnitCount: return "体";
     }
 }
