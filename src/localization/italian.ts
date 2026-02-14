@@ -306,5 +306,20 @@ export function resolveItalian(text: Label): string {
         case Label.BugReportInstructions: return "Per aiutarci a risolvere questo problema, includi i passaggi per riprodurlo e allega gli split e il layout che stavi usando quando si è verificato il problema.";
         case Label.LoadFailedPrivateBrowsing: return "Impossibile caricare LiveSplit One.\nPotresti essere in modalità di navigazione privata.\nLiveSplit One non può salvare split, layout o altre impostazioni a causa delle limitazioni della modalità privata del browser.\nQueste limitazioni potrebbero essere rimosse in futuro.\nPer usare LiveSplit One ora, disattiva la navigazione privata nelle impostazioni.";
         case Label.LoadFailedOutdatedBrowser: return "Impossibile caricare LiveSplit One.\nPotresti usare un browser non aggiornato.\nAggiorna il browser o la versione di iOS e riprova.\nUn altro motivo potrebbe essere un’estensione del browser, ad esempio un adblocker, che blocca l’accesso a script importanti.";
+        // Elite Counter labels (English fallback)
+        case Label.EliteCounter: return "Elite Counter";
+        case Label.EliteCount: return "Elite Count";
+        case Label.TotalEliteCount: return "Total Elites";
+        case Label.AvgSecondsPerElite: return "Avg Sec/Elite";
+        case Label.EliteCounterHeading: return "Elite Counter Settings";
+        case Label.EliteHighlightMode: return "Highlight Mode";
+        case Label.EliteHighlightModeDescription: return "Choose how to highlight segments with poor performance.";
+        case Label.EliteHighlightPercentage: return "Bottom Percentage";
+        case Label.EliteHighlightPercentageDescription: return "Highlight bottom N% of segments (e.g., 20 for bottom 20%).";
+        case Label.EliteHighlightRank: return "Bottom Rank";
+        case Label.EliteHighlightRankDescription: return "Highlight bottom N ranked segments.";
+        case Label.EliteHighlightThreshold: return "Threshold (sec/elite)";
+        case Label.EliteHighlightThresholdDescription: return "Highlight segments with average seconds per elite above this value.";
+        case Label.EliteAvgFormatUnit: return "sec/elite";
     }
 }

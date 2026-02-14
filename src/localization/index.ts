@@ -319,6 +319,21 @@ export enum Label {
     BugReportInstructions,
     LoadFailedPrivateBrowsing,
     LoadFailedOutdatedBrowser,
+    // Elite Counter labels
+    EliteCounter,
+    EliteCount,
+    TotalEliteCount,
+    AvgSecondsPerElite,
+    EliteCounterHeading,
+    EliteHighlightMode,
+    EliteHighlightModeDescription,
+    EliteHighlightPercentage,
+    EliteHighlightPercentageDescription,
+    EliteHighlightRank,
+    EliteHighlightRankDescription,
+    EliteHighlightThreshold,
+    EliteHighlightThresholdDescription,
+    EliteAvgFormatUnit,
 }
 
 export function resolve(text: Label, lang: Language | undefined): string {
