@@ -66,12 +66,12 @@ export function getSegmentEliteCount(
  */
 export function setSegmentEliteCount(
     editor: LiveSplit.RunEditorRefMut,
+    editorState: LiveSplit.RunEditorStateJson,
     segmentIndex: number,
     eliteCount: number,
 ): void {
-    // Get current editor state to access segment name
-    const state = editor.state();
-    const segment = state.segments[segmentIndex];
+    // Get segment name from editor state
+    const segment = editorState.segments[segmentIndex];
     if (!segment) {
         return;
     }

@@ -1177,6 +1177,7 @@ function SegmentsTable({
                                     onBlur={(_) =>
                                         handleEliteCountBlur(
                                             editor,
+                                            editorState,
                                             rowState,
                                             setRowState,
                                             update,
@@ -2813,6 +2814,7 @@ function handleComparisonTimeBlur(
 
 function handleEliteCountBlur(
     editor: LiveSplit.RunEditorRefMut,
+    editorState: LiveSplit.RunEditorStateJson,
     rowState: RowState,
     setRowState: (rowState: RowState) => void,
     update: () => void,
@@ -2820,7 +2822,7 @@ function handleEliteCountBlur(
     if (rowState.eliteCountChanged) {
         const eliteCount = parseInt(rowState.eliteCount, 10);
         if (!isNaN(eliteCount) && eliteCount >= 0) {
-            setSegmentEliteCount(editor, rowState.index, eliteCount);
+            setSegmentEliteCount(editor, editorState, rowState.index, eliteCount);
         }
         update();
         setRowState({ ...rowState, eliteCountChanged: false });

@@ -274,32 +274,34 @@ export function View({
     });
 
     let eliteHighlightValueIndex = -1;
-    if (eliteHighlightMode !== 'none') {
-        eliteHighlightValueIndex = generalFields.length;
-        let valueLabel = '';
-        let valueTooltip = '';
-        let currentValue = 0;
-
-        if (eliteHighlightMode === 'percentage') {
-            valueLabel = resolve(Label.EliteHighlightPercentage, lang);
-            valueTooltip = resolve(Label.EliteHighlightPercentageDescription, lang);
-            currentValue = generalSettings.eliteHighlight?.percentage || 20;
-        } else if (eliteHighlightMode === 'rank') {
-            valueLabel = resolve(Label.EliteHighlightRank, lang);
-            valueTooltip = resolve(Label.EliteHighlightRankDescription, lang);
-            currentValue = generalSettings.eliteHighlight?.rank || 3;
-        } else if (eliteHighlightMode === 'absolute') {
-            valueLabel = resolve(Label.EliteHighlightThreshold, lang);
-            valueTooltip = resolve(Label.EliteHighlightThresholdDescription, lang);
-            currentValue = generalSettings.eliteHighlight?.threshold || 10;
-        }
-
-        generalFields.push({
-            text: valueLabel,
-            tooltip: valueTooltip,
-            value: { Float: currentValue },
-        });
-    }
+    // TODO: Add numeric input field for elite highlight value
+    // Currently users can edit the value in settings JSON file directly
+    // if (eliteHighlightMode !== 'none') {
+    //     eliteHighlightValueIndex = generalFields.length;
+    //     let valueLabel = '';
+    //     let valueTooltip = '';
+    //     let currentValue = 0;
+    //
+    //     if (eliteHighlightMode === 'percentage') {
+    //         valueLabel = resolve(Label.EliteHighlightPercentage, lang);
+    //         valueTooltip = resolve(Label.EliteHighlightPercentageDescription, lang);
+    //         currentValue = generalSettings.eliteHighlight?.percentage || 20;
+    //     } else if (eliteHighlightMode === 'rank') {
+    //         valueLabel = resolve(Label.EliteHighlightRank, lang);
+    //         valueTooltip = resolve(Label.EliteHighlightRankDescription, lang);
+    //         currentValue = generalSettings.eliteHighlight?.rank || 3;
+    //     } else if (eliteHighlightMode === 'absolute') {
+    //         valueLabel = resolve(Label.EliteHighlightThreshold, lang);
+    //         valueTooltip = resolve(Label.EliteHighlightThresholdDescription, lang);
+    //         currentValue = generalSettings.eliteHighlight?.threshold || 10;
+    //     }
+    //
+    //     generalFields.push({
+    //         text: valueLabel,
+    //         tooltip: valueTooltip,
+    //         value: currentValue.toString(),
+    //     });
+    // }
 
     return (
         <div>
@@ -427,16 +429,16 @@ export function View({
                             } else if (index === eliteHighlightValueIndex && "Float" in value) {
                                 // Elite Highlight Value changed
                                 const currentMode = generalSettings.eliteHighlight?.mode || 'none';
-                                const updatedSettings: EliteHighlightSettings = {
+                                const updatedSettings: HighlightSettings = {
                                     ...(generalSettings.eliteHighlight || { mode: currentMode }),
                                 };
 
                                 if (currentMode === 'percentage') {
-                                    updatedSettings.percentage = value.Float;
+                                    updatedSettings.percentage = value.Float as number;
                                 } else if (currentMode === 'rank') {
-                                    updatedSettings.rank = value.Float;
+                                    updatedSettings.rank = value.Float as number;
                                 } else if (currentMode === 'absolute') {
-                                    updatedSettings.threshold = value.Float;
+                                    updatedSettings.threshold = value.Float as number;
                                 }
 
                                 setGeneralSettings({

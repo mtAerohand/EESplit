@@ -1,7 +1,8 @@
 import * as React from "react";
 
 import * as classes from "../../css/EliteCounter.module.scss";
-import { Language, Label, resolve } from "../../localization";
+import { Language } from "../../livesplit-core";
+import { Label, resolve } from "../../localization";
 
 export interface EliteCounterProps {
     current: number;
