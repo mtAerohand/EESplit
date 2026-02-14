@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import * as LiveSplit from "../../livesplit-core";
 import {
     FILE_EXT_IMAGES,
@@ -48,6 +48,16 @@ import {
     LeaderboardButtons,
 } from "../components/Leaderboard";
 import { Label, orAutoLang, resolve } from "../../localization";
+import {
+    getSegmentEliteCount,
+    setSegmentEliteCount,
+    getTotalEliteCount,
+    calculateAvgSecondsPerElite,
+    formatAvgSecondsPerElite,
+    parseTimeString,
+    getAllSegmentEliteData,
+    getHighlightedSegments,
+} from "../../util/EliteCalculations";
 
 import * as classes from "../../css/RunEditor.module.scss";
 import * as buttonGroupClasses from "../../css/ButtonGroup.module.scss";
@@ -82,6 +92,9 @@ interface RowState {
     comparisonTimes: string[];
     comparisonTimesChanged: boolean[];
     index: number;
+    // Elite counter fields
+    eliteCount: string;
+    eliteCountChanged: boolean;
 }
 
 enum Tab {
@@ -135,6 +148,17 @@ function View(props: Props & { abortController: AbortController }) {
     const [tab, setTab] = useState(() =>
         editorState.timing_method === "RealTime" ? Tab.RealTime : Tab.GameTime,
     );
+
+    // Calculate highlighted segments based on elite highlight settings
+    const highlightedSegments = useMemo(() => {
+        const highlightSettings = props.generalSettings.eliteHighlight;
+        if (!highlightSettings || highlightSettings.mode === 'none') {
+            return new Set<number>();
+        }
+
+        const segmentData = getAllSegmentEliteData(editorState);
+        return getHighlightedSegments(segmentData, highlightSettings);
+    }, [editorState, props.generalSettings.eliteHighlight]);
 
     useEffect(() => {
         if (props.generalSettings.speedrunComIntegration) {
@@ -313,6 +337,14 @@ function View(props: Props & { abortController: AbortController }) {
                                 label={resolve(Label.Attempts, lang)}
                             />
                         </div>
+                        <div className={classes.infoTableCell}>
+                            <div className={classes.textBox}>
+                                <label>{resolve(Label.TotalEliteCount, lang)}</label>
+                                <div className={classes.eliteTotalValue}>
+                                    {getTotalEliteCount(editorState)}体
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -364,6 +396,7 @@ function View(props: Props & { abortController: AbortController }) {
                         maybeUpdate={maybeUpdate}
                         update={update}
                         lang={lang}
+                        highlightedSegments={highlightedSegments}
                     />
                 </div>
             </div>
@@ -765,6 +798,7 @@ function TabContent({
     maybeUpdate,
     update,
     lang,
+    highlightedSegments,
 }: {
     tab: Tab;
     category: Option<Category>;
@@ -779,6 +813,7 @@ function TabContent({
     maybeUpdate: () => void;
     update: () => LiveSplit.RunEditorStateJson;
     lang: LiveSplit.Language | undefined;
+    highlightedSegments: Set<number>;
 }) {
     switch (tab) {
         case Tab.RealTime:
@@ -791,6 +826,7 @@ function TabContent({
                     maybeUpdate={maybeUpdate}
                     update={update}
                     lang={lang}
+                    highlightedSegments={highlightedSegments}
                 />
             );
         case Tab.Variables:
@@ -836,6 +872,7 @@ function SegmentsTable({
     maybeUpdate,
     update,
     lang,
+    highlightedSegments,
 }: {
     editor: LiveSplit.RunEditorRefMut;
     editorState: LiveSplit.RunEditorStateJson;
@@ -843,6 +880,7 @@ function SegmentsTable({
     maybeUpdate: () => void;
     update: () => LiveSplit.RunEditorStateJson;
     lang: LiveSplit.Language | undefined;
+    highlightedSegments: Set<number>;
 }) {
     const [dragIndex, setDragIndex] = useState(0);
     const [rowState, setRowState] = useState<RowState>(() => ({
@@ -855,6 +893,8 @@ function SegmentsTable({
         segmentTimeChanged: false,
         splitTime: "",
         splitTimeChanged: false,
+        eliteCount: "",
+        eliteCountChanged: false,
     }));
 
     return (
@@ -866,6 +906,8 @@ function SegmentsTable({
                     <th>{resolve(Label.SplitTime, lang)}</th>
                     <th>{resolve(Label.SegmentTime, lang)}</th>
                     <th>{resolve(Label.BestSegment, lang)}</th>
+                    <th>{resolve(Label.EliteCount, lang)}</th>
+                    <th>{resolve(Label.AvgSecondsPerElite, lang)}</th>
                     {editorState.comparison_names.map(
                         (comparison, comparisonIndex) => {
                             return (
@@ -925,15 +967,20 @@ function SegmentsTable({
                         editorState,
                     );
 
+                    const isHighlighted = highlightedSegments.has(segmentIndex);
+                    const rowClassName = [
+                        s.selected === "Selected" || s.selected === "Active"
+                            ? tableClasses.selected
+                            : "",
+                        isHighlighted ? classes.highlightedRow : "",
+                    ]
+                        .filter(Boolean)
+                        .join(" ");
+
                     return (
                         <tr
                             key={segmentIndex}
-                            className={
-                                s.selected === "Selected" ||
-                                s.selected === "Active"
-                                    ? tableClasses.selected
-                                    : ""
-                            }
+                            className={rowClassName}
                             onClick={(e) =>
                                 changeSegmentSelection(
                                     e,
@@ -1098,6 +1145,61 @@ function SegmentsTable({
                                         )
                                     }
                                 />
+                            </td>
+                            <td>
+                                <input
+                                    className={`${tableClasses.number} ${tableClasses.textBox}`}
+                                    type="number"
+                                    min="0"
+                                    step="1"
+                                    value={
+                                        segmentIndex === rowState.index &&
+                                        rowState.eliteCountChanged
+                                            ? rowState.eliteCount
+                                            : getSegmentEliteCount(editorState, segmentIndex)
+                                    }
+                                    onFocus={(_) =>
+                                        focusSegment(
+                                            segmentIndex,
+                                            editor,
+                                            rowState,
+                                            setRowState,
+                                            update,
+                                        )
+                                    }
+                                    onChange={(e) =>
+                                        setRowState({
+                                            ...rowState,
+                                            eliteCount: e.target.value,
+                                            eliteCountChanged: true,
+                                        })
+                                    }
+                                    onBlur={(_) =>
+                                        handleEliteCountBlur(
+                                            editor,
+                                            editorState,
+                                            rowState,
+                                            setRowState,
+                                            update,
+                                        )
+                                    }
+                                />
+                            </td>
+                            <td>
+                                <span
+                                    className={`${tableClasses.number} ${
+                                        isHighlighted ? classes.highlightedAvg : ""
+                                    }`}
+                                >
+                                    {(() => {
+                                        const eliteCount = getSegmentEliteCount(editorState, segmentIndex);
+                                        const segmentTime = parseTimeString(
+                                            editorState.segments[segmentIndex].segment_time
+                                        );
+                                        const avg = calculateAvgSecondsPerElite(segmentTime, eliteCount);
+                                        return formatAvgSecondsPerElite(avg, lang, resolve, Label);
+                                    })()}
+                                </span>
                             </td>
                             {editorState.segments[
                                 segmentIndex
@@ -1290,6 +1392,11 @@ function VariablesTab({
     }
 
     for (const customVariableName of Object.keys(metadata.custom_variables)) {
+        // Filter out internal elite count variables
+        if (customVariableName.startsWith("__elite_count_seg_")) {
+            continue;
+        }
+
         const customVariableValue =
             metadata.custom_variables[customVariableName];
         if (customVariableValue && customVariableValue.is_permanent) {
@@ -2627,6 +2734,7 @@ function focusSegment(
         bestSegmentTimeChanged: false,
         comparisonTimes,
         comparisonTimesChanged: comparisonTimes.map(() => false),
+        eliteCountChanged: false,
         index: i,
     });
 }
@@ -2701,6 +2809,23 @@ function handleComparisonTimeBlur(
         const comparisonTimesChanged = [...rowState.comparisonTimesChanged];
         comparisonTimesChanged[comparisonIndex] = false;
         setRowState({ ...rowState, comparisonTimesChanged });
+    }
+}
+
+function handleEliteCountBlur(
+    editor: LiveSplit.RunEditorRefMut,
+    editorState: LiveSplit.RunEditorStateJson,
+    rowState: RowState,
+    setRowState: (rowState: RowState) => void,
+    update: () => void,
+) {
+    if (rowState.eliteCountChanged) {
+        const eliteCount = parseInt(rowState.eliteCount, 10);
+        if (!isNaN(eliteCount) && eliteCount >= 0) {
+            setSegmentEliteCount(editor, editorState, rowState.index, eliteCount);
+        }
+        update();
+        setRowState({ ...rowState, eliteCountChanged: false });
     }
 }
 

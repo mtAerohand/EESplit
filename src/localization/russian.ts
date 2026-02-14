@@ -306,5 +306,22 @@ export function resolveRussian(text: Label): string {
         case Label.BugReportInstructions: return "Чтобы помочь нам исправить эту проблему, укажите шаги для воспроизведения и приложите сплиты и раскладку, которые вы использовали, когда возникла проблема.";
         case Label.LoadFailedPrivateBrowsing: return "Не удалось загрузить LiveSplit One.\nВозможно, вы используете режим приватного просмотра.\nLiveSplit One не может сохранять сплиты, раскладки или другие настройки из‑за ограничений приватного режима браузера.\nЭти ограничения могут быть сняты в будущем.\nЧтобы использовать LiveSplit One сейчас, отключите приватный режим в настройках.";
         case Label.LoadFailedOutdatedBrowser: return "Не удалось загрузить LiveSplit One.\nВозможно, вы используете устаревший браузер.\nОбновите браузер или версию iOS и попробуйте снова.\nДругая причина может быть в расширении браузера, например блокировщике рекламы, которое блокирует доступ к важным скриптам.";
+        // Elite Counter labels (English fallback)
+        case Label.EliteCounter: return "Elite Counter";
+        case Label.EliteCount: return "Elite Count";
+        case Label.TotalEliteCount: return "Total Elites";
+        case Label.AvgSecondsPerElite: return "Avg Sec/Elite";
+        case Label.EliteCounterHeading: return "Elite Counter Settings";
+        case Label.EliteHighlightMode: return "Highlight Mode";
+        case Label.EliteHighlightModeDescription: return "Choose how to highlight segments with poor performance.";
+        case Label.EliteHighlightPercentage: return "Bottom Percentage";
+        case Label.EliteHighlightPercentageDescription: return "Highlight bottom N% of segments (e.g., 20 for bottom 20%).";
+        case Label.EliteHighlightRank: return "Bottom Rank";
+        case Label.EliteHighlightRankDescription: return "Highlight bottom N ranked segments.";
+        case Label.EliteHighlightThreshold: return "Threshold (sec/elite)";
+        case Label.EliteHighlightThresholdDescription: return "Highlight segments with average seconds per elite above this value.";
+        case Label.EliteAvgFormatUnit: return "sec/elite";
+        case Label.EliteUnitCount: return "enemies";
+        case Label.None: return "Нет";
     }
 }

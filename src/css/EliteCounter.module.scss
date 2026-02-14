@@ -1,0 +1,59 @@
+@use "variables.icss";
+
+.eliteCounter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: variables.$ui-margin;
+    margin: variables.$ui-large-margin 0;
+    background-color: rgba(23, 23, 23, 0.3); // Using hex value from $main-background-color
+    border-radius: 8px;
+    border: 1px solid variables.$border-color;
+}
+
+.label {
+    font-family: "fira", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: variables.$button-text-color;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.8;
+}
+
+.count {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    font-family: "fira", sans-serif;
+    font-weight: bold;
+}
+
+.current {
+    font-size: 36px;
+    color: #4caf50; // Green color for current count (progress indicator)
+    line-height: 1;
+}
+
+.separator {
+    font-size: 28px;
+    color: variables.$button-text-color;
+    opacity: 0.6;
+    margin: 0 2px;
+}
+
+.total {
+    font-size: 28px;
+    color: variables.$button-text-color;
+    opacity: 0.8;
+    line-height: 1;
+}
+
+.unit {
+    font-size: 18px;
+    color: variables.$button-text-color;
+    opacity: 0.7;
+    margin-left: 4px;
+}

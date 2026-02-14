@@ -166,6 +166,13 @@ $small-button-padding: 1px 3px 1px 3px;
         }
     }
 
+    .eliteTotalValue {
+        font-size: 1.1em;
+        font-weight: 600;
+        color: variables.$button-text-color;
+        padding: 4px 0;
+    }
+
     @include mobile.mobile {
         flex-wrap: wrap;
     }
@@ -264,4 +271,14 @@ tbody > tr > .segmentIconContainer {
 .bestSegmentTime {
     // FIXME: important
     color: hsla(50, 100%, 50%, 1) !important;
+}
+
+// Elite highlight classes
+.highlightedRow {
+    background-color: rgba(255, 68, 68, 0.15) !important;
+}
+
+.highlightedAvg {
+    color: #ff4444 !important;
+    font-weight: 600;
 }
