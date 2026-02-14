@@ -306,5 +306,19 @@ export function resolveJapanese(text: Label): string {
         case Label.BugReportInstructions: return "この問題の修正に役立つよう、再現手順を記載し、問題が発生したときに使用していたスプリットとレイアウトを添付してください。";
         case Label.LoadFailedPrivateBrowsing: return "LiveSplit One を読み込めませんでした。\nプライベートブラウジングを使用している可能性があります。\nブラウザのプライベートブラウジングの制限により、LiveSplit One はスプリット、レイアウト、その他の設定を保存できません。\nこれらの制限は将来解除される可能性があります。\n今すぐ LiveSplit One を使うには、設定でプライベートブラウジングを無効にしてください。";
         case Label.LoadFailedOutdatedBrowser: return "LiveSplit One を読み込めませんでした。\nブラウザが最新でない可能性があります。\nブラウザまたは iOS のバージョンを更新して、もう一度お試しください。\n別の原因として、広告ブロッカーなどのブラウザ拡張機能が重要なスクリプトへのアクセスをブロックしている可能性があります。";
+        // Elite Counter labels
+        case Label.EliteCounter: return "精鋭カウンター";
+        case Label.EliteCount: return "精鋭数";
+        case Label.TotalEliteCount: return "精鋭合計";
+        case Label.AvgSecondsPerElite: return "平均秒/体";
+        case Label.EliteCounterHeading: return "精鋭カウンター設定";
+        case Label.EliteHighlightMode: return "ハイライトモード";
+        case Label.EliteHighlightModeDescription: return "パフォーマンスが悪い区間をハイライト表示する方法を選択します。";
+        case Label.EliteHighlightPercentage: return "下位パーセンテージ";
+        case Label.EliteHighlightPercentageDescription: return "下位何%の区間をハイライトするかを設定します（例：20で下位20%）。";
+        case Label.EliteHighlightRank: return "下位順位";
+        case Label.EliteHighlightRankDescription: return "下位何位までの区間をハイライトするかを設定します。";
+        case Label.EliteHighlightThreshold: return "閾値（秒/体）";
+        case Label.EliteHighlightThresholdDescription: return "この値以上の平均討伐秒数を持つ区間をハイライトします。";
     }
 }
