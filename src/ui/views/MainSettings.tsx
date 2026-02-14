@@ -25,6 +25,7 @@ import { Check, FlaskConical, X } from "lucide-react";
 
 import * as buttonGroupClasses from "../../css/ButtonGroup.module.scss";
 import { Label, orAutoLang, resolve, setHtmlLang } from "../../localization";
+import { HighlightSettings } from "../../util/EliteCalculations";
 
 export interface GeneralSettings {
     frameRate: FrameRateSetting;
@@ -35,14 +36,7 @@ export interface GeneralSettings {
     serverUrl?: string;
     alwaysOnTop?: boolean;
     lang: Language | undefined;
-    eliteHighlight?: EliteHighlightSettings;
-}
-
-export interface EliteHighlightSettings {
-    mode: 'percentage' | 'rank' | 'absolute' | 'none';
-    percentage?: number;
-    rank?: number;
-    threshold?: number;
+    eliteHighlight?: HighlightSettings;
 }
 
 export interface ManualGameTimeSettings {
@@ -279,7 +273,7 @@ export function View({
         },
     });
 
-    let eliteHighlightValueIndex = 0;
+    let eliteHighlightValueIndex = -1;
     if (eliteHighlightMode !== 'none') {
         eliteHighlightValueIndex = generalFields.length;
         let valueLabel = '';

@@ -118,7 +118,7 @@ function toTraditional(value: string): string {
         case Label.EliteHighlightThresholdDescription: return "Highlight segments with average seconds per elite above this value.";
         case Label.EliteAvgFormatUnit: return "sec/elite";
         case Label.EliteUnitCount: return "enemies";
-        case Label.None: return "None";
+        case Label.None: return "無";
     }
     return result;
 }

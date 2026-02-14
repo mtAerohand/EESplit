@@ -396,6 +396,7 @@ function View(props: Props & { abortController: AbortController }) {
                         maybeUpdate={maybeUpdate}
                         update={update}
                         lang={lang}
+                        highlightedSegments={highlightedSegments}
                     />
                 </div>
             </div>
@@ -797,6 +798,7 @@ function TabContent({
     maybeUpdate,
     update,
     lang,
+    highlightedSegments,
 }: {
     tab: Tab;
     category: Option<Category>;
@@ -811,6 +813,7 @@ function TabContent({
     maybeUpdate: () => void;
     update: () => LiveSplit.RunEditorStateJson;
     lang: LiveSplit.Language | undefined;
+    highlightedSegments: Set<number>;
 }) {
     switch (tab) {
         case Tab.RealTime:
@@ -823,6 +826,7 @@ function TabContent({
                     maybeUpdate={maybeUpdate}
                     update={update}
                     lang={lang}
+                    highlightedSegments={highlightedSegments}
                 />
             );
         case Tab.Variables:
@@ -868,6 +872,7 @@ function SegmentsTable({
     maybeUpdate,
     update,
     lang,
+    highlightedSegments,
 }: {
     editor: LiveSplit.RunEditorRefMut;
     editorState: LiveSplit.RunEditorStateJson;
@@ -875,6 +880,7 @@ function SegmentsTable({
     maybeUpdate: () => void;
     update: () => LiveSplit.RunEditorStateJson;
     lang: LiveSplit.Language | undefined;
+    highlightedSegments: Set<number>;
 }) {
     const [dragIndex, setDragIndex] = useState(0);
     const [rowState, setRowState] = useState<RowState>(() => ({
