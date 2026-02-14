@@ -26,9 +26,12 @@ export interface HighlightSettings {
 
 /**
  * Get custom variable key for segment elite count
+ * Uses segment name for stability when reordering segments
  */
-export function getEliteCountKey(segmentIndex: number): string {
-    return `${ELITE_COUNT_PREFIX}${segmentIndex}`;
+export function getEliteCountKey(segmentName: string): string {
+    // Sanitize segment name to ensure valid key
+    const sanitized = segmentName.replace(/[^a-zA-Z0-9_-]/g, '_');
+    return `${ELITE_COUNT_PREFIX}${sanitized}`;
 }
 
 /**
@@ -48,7 +51,11 @@ export function getSegmentEliteCount(
     editorState: LiveSplit.RunEditorStateJson,
     segmentIndex: number,
 ): number {
-    const key = getEliteCountKey(segmentIndex);
+    const segment = editorState.segments[segmentIndex];
+    if (!segment) {
+        return 0;
+    }
+    const key = getEliteCountKey(segment.name);
     const customVar = editorState.metadata.custom_variables[key];
     return customVar ? parseEliteCount(customVar.value) : 0;
 }
@@ -61,7 +68,14 @@ export function setSegmentEliteCount(
     segmentIndex: number,
     eliteCount: number,
 ): void {
-    const key = getEliteCountKey(segmentIndex);
+    // Get current editor state to access segment name
+    const state = editor.state();
+    const segment = state.segments[segmentIndex];
+    if (!segment) {
+        return;
+    }
+
+    const key = getEliteCountKey(segment.name);
     const value = Math.max(0, Math.floor(eliteCount)).toString();
 
     // Set as permanent custom variable (saved with run)
