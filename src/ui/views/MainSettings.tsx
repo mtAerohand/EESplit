@@ -35,6 +35,14 @@ export interface GeneralSettings {
     serverUrl?: string;
     alwaysOnTop?: boolean;
     lang: Language | undefined;
+    eliteHighlight?: EliteHighlightSettings;
+}
+
+export interface EliteHighlightSettings {
+    mode: 'percentage' | 'rank' | 'absolute' | 'none';
+    percentage?: number;
+    rank?: number;
+    threshold?: number;
 }
 
 export interface ManualGameTimeSettings {
@@ -251,6 +259,54 @@ export function View({
         });
     }
 
+    // Elite Highlight Settings
+    const eliteHighlightModeIndex = generalFields.length;
+    const eliteHighlightMode = generalSettings.eliteHighlight?.mode || 'none';
+    generalFields.push({
+        text: resolve(Label.EliteHighlightMode, lang),
+        tooltip: resolve(Label.EliteHighlightModeDescription, lang),
+        value: {
+            CustomCombobox: {
+                value: eliteHighlightMode,
+                list: [
+                    ['none', resolve(Label.None, lang)],
+                    ['percentage', resolve(Label.EliteHighlightPercentage, lang)],
+                    ['rank', resolve(Label.EliteHighlightRank, lang)],
+                    ['absolute', resolve(Label.EliteHighlightThreshold, lang)],
+                ] as [string, string][],
+                mandatory: true,
+            },
+        },
+    });
+
+    let eliteHighlightValueIndex = 0;
+    if (eliteHighlightMode !== 'none') {
+        eliteHighlightValueIndex = generalFields.length;
+        let valueLabel = '';
+        let valueTooltip = '';
+        let currentValue = 0;
+
+        if (eliteHighlightMode === 'percentage') {
+            valueLabel = resolve(Label.EliteHighlightPercentage, lang);
+            valueTooltip = resolve(Label.EliteHighlightPercentageDescription, lang);
+            currentValue = generalSettings.eliteHighlight?.percentage || 20;
+        } else if (eliteHighlightMode === 'rank') {
+            valueLabel = resolve(Label.EliteHighlightRank, lang);
+            valueTooltip = resolve(Label.EliteHighlightRankDescription, lang);
+            currentValue = generalSettings.eliteHighlight?.rank || 3;
+        } else if (eliteHighlightMode === 'absolute') {
+            valueLabel = resolve(Label.EliteHighlightThreshold, lang);
+            valueTooltip = resolve(Label.EliteHighlightThresholdDescription, lang);
+            currentValue = generalSettings.eliteHighlight?.threshold || 10;
+        }
+
+        generalFields.push({
+            text: valueLabel,
+            tooltip: valueTooltip,
+            value: { Float: currentValue },
+        });
+    }
+
     return (
         <div>
             <h2>{resolve(Label.HotkeysHeading, lang)}</h2>
@@ -362,6 +418,36 @@ export function View({
                                     showManualGameTime: {
                                         mode: value.String,
                                     },
+                                });
+                            } else if (index === eliteHighlightModeIndex && "String" in value) {
+                                // Elite Highlight Mode changed
+                                setGeneralSettings({
+                                    ...generalSettings,
+                                    eliteHighlight: {
+                                        mode: value.String as 'percentage' | 'rank' | 'absolute' | 'none',
+                                        percentage: generalSettings.eliteHighlight?.percentage || 20,
+                                        rank: generalSettings.eliteHighlight?.rank || 3,
+                                        threshold: generalSettings.eliteHighlight?.threshold || 10,
+                                    },
+                                });
+                            } else if (index === eliteHighlightValueIndex && "Float" in value) {
+                                // Elite Highlight Value changed
+                                const currentMode = generalSettings.eliteHighlight?.mode || 'none';
+                                const updatedSettings: EliteHighlightSettings = {
+                                    ...(generalSettings.eliteHighlight || { mode: currentMode }),
+                                };
+
+                                if (currentMode === 'percentage') {
+                                    updatedSettings.percentage = value.Float;
+                                } else if (currentMode === 'rank') {
+                                    updatedSettings.rank = value.Float;
+                                } else if (currentMode === 'absolute') {
+                                    updatedSettings.threshold = value.Float;
+                                }
+
+                                setGeneralSettings({
+                                    ...generalSettings,
+                                    eliteHighlight: updatedSettings,
                                 });
                             }
                             break;
