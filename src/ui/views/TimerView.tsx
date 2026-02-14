@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
     TimingMethod,
     TimeSpan,
@@ -38,7 +38,10 @@ import * as sidebarClasses from "../../css/Sidebar.module.scss";
 import * as buttonGroupClasses from "../../css/ButtonGroup.module.scss";
 import { Label, orAutoLang, resolve } from "../../localization";
 import { EliteCounter } from "../components/EliteCounter";
-import { getTotalEliteCount, getCompletedEliteCount } from "../../util/EliteCalculations";
+import {
+    getTotalEliteCountFromRun,
+    getCompletedEliteCountFromRun,
+} from "../../util/EliteCalculations";
 
 export interface Props {
     isDesktop: boolean;
@@ -106,11 +109,13 @@ function View({
     const showManualGameTime = generalSettings.showManualGameTime;
     const lang = generalSettings.lang;
 
-    // Calculate elite counts for EliteCounter
-    const editor = commandSink.getRunEditor();
-    const editorState = editor.state();
-    const totalEliteCount = getTotalEliteCount(editorState);
-    const completedEliteCount = getCompletedEliteCount(editorState, currentSplitIndex);
+    // Calculate elite counts for EliteCounter (memoized for performance)
+    const run = commandSink.getRun();
+    const totalEliteCount = useMemo(() => getTotalEliteCountFromRun(run), [run]);
+    const completedEliteCount = useMemo(
+        () => getCompletedEliteCountFromRun(run, currentSplitIndex),
+        [run, currentSplitIndex],
+    );
 
     return (
         <DragUpload

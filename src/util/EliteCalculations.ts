@@ -6,6 +6,7 @@
  */
 
 import * as LiveSplit from "../livesplit-core";
+import { RunRef } from "../livesplit-core";
 
 // Naming convention for elite count custom variables
 const ELITE_COUNT_PREFIX = "__elite_count_seg_";
@@ -296,5 +297,73 @@ export function getCompletedEliteCount(
     for (let i = 0; i < currentSplitIndex && i < editorState.segments.length; i++) {
         completed += getSegmentEliteCount(editorState, i);
     }
+    return completed;
+}
+
+/**
+ * Get elite count for a segment from RunRef (used during active timing)
+ * @param run RunRef from active timer
+ * @param segmentIndex Index of the segment
+ * @returns Elite count for the segment
+ */
+export function getSegmentEliteCountFromRun(
+    run: RunRef,
+    segmentIndex: number,
+): number {
+    const segmentName = run.segment(segmentIndex).name();
+    const key = getEliteCountKey(segmentName);
+
+    // Iterate through custom variables to find the elite count
+    using customVarsIter = run.metadata().customVariables();
+    while (true) {
+        const customVar = customVarsIter.next();
+        if (customVar === null) {
+            break;
+        }
+        if (customVar.name() === key) {
+            return parseEliteCount(customVar.value());
+        }
+    }
+
+    return 0;
+}
+
+/**
+ * Calculate total elite count from RunRef (used during active timing)
+ * @param run RunRef from active timer
+ * @returns Total elite count across all segments
+ */
+export function getTotalEliteCountFromRun(run: RunRef): number {
+    let total = 0;
+    const segmentCount = run.segmentsLen();
+
+    for (let i = 0; i < segmentCount; i++) {
+        total += getSegmentEliteCountFromRun(run, i);
+    }
+
+    return total;
+}
+
+/**
+ * Calculate completed elite count from RunRef (used during active timing)
+ * @param run RunRef from active timer
+ * @param currentSplitIndex Current split index from timer state
+ * @returns Number of elites in completed segments
+ */
+export function getCompletedEliteCountFromRun(
+    run: RunRef,
+    currentSplitIndex: number | undefined,
+): number {
+    if (currentSplitIndex === undefined || currentSplitIndex <= 0) {
+        return 0;
+    }
+
+    let completed = 0;
+    const segmentCount = run.segmentsLen();
+
+    for (let i = 0; i < currentSplitIndex && i < segmentCount; i++) {
+        completed += getSegmentEliteCountFromRun(run, i);
+    }
+
     return completed;
 }
