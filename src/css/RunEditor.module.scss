@@ -272,3 +272,13 @@ tbody > tr > .segmentIconContainer {
     // FIXME: important
     color: hsla(50, 100%, 50%, 1) !important;
 }
+
+// Elite highlight classes
+.highlightedRow {
+    background-color: rgba(255, 68, 68, 0.15) !important;
+}
+
+.highlightedAvg {
+    color: #ff4444 !important;
+    font-weight: 600;
+}
