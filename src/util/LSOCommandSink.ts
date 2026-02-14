@@ -484,4 +484,8 @@ export class LSOCommandSink {
     getTimer(): number {
         return this.timer.ptr;
     }
+
+    public getRunEditor(): RunEditor {
+        return this.timer.getRun().editor();
+    }
 }
