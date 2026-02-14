@@ -322,5 +322,6 @@ export function resolveDutch(text: Label): string {
         case Label.EliteHighlightThresholdDescription: return "Highlight segments with average seconds per elite above this value.";
         case Label.EliteAvgFormatUnit: return "sec/elite";
         case Label.EliteUnitCount: return "enemies";
+        case Label.None: return "Geen";
     }
 }

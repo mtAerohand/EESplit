@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import * as LiveSplit from "../../livesplit-core";
 import {
     FILE_EXT_IMAGES,
@@ -55,6 +55,8 @@ import {
     calculateAvgSecondsPerElite,
     formatAvgSecondsPerElite,
     parseTimeString,
+    getAllSegmentEliteData,
+    getHighlightedSegments,
 } from "../../util/EliteCalculations";
 
 import * as classes from "../../css/RunEditor.module.scss";
@@ -146,6 +148,17 @@ function View(props: Props & { abortController: AbortController }) {
     const [tab, setTab] = useState(() =>
         editorState.timing_method === "RealTime" ? Tab.RealTime : Tab.GameTime,
     );
+
+    // Calculate highlighted segments based on elite highlight settings
+    const highlightedSegments = useMemo(() => {
+        const highlightSettings = props.generalSettings.eliteHighlight;
+        if (!highlightSettings || highlightSettings.mode === 'none') {
+            return new Set<number>();
+        }
+
+        const segmentData = getAllSegmentEliteData(editorState);
+        return getHighlightedSegments(segmentData, highlightSettings);
+    }, [editorState, props.generalSettings.eliteHighlight]);
 
     useEffect(() => {
         if (props.generalSettings.speedrunComIntegration) {
@@ -383,6 +396,7 @@ function View(props: Props & { abortController: AbortController }) {
                         maybeUpdate={maybeUpdate}
                         update={update}
                         lang={lang}
+                        highlightedSegments={highlightedSegments}
                     />
                 </div>
             </div>
@@ -784,6 +798,7 @@ function TabContent({
     maybeUpdate,
     update,
     lang,
+    highlightedSegments,
 }: {
     tab: Tab;
     category: Option<Category>;
@@ -798,6 +813,7 @@ function TabContent({
     maybeUpdate: () => void;
     update: () => LiveSplit.RunEditorStateJson;
     lang: LiveSplit.Language | undefined;
+    highlightedSegments: Set<number>;
 }) {
     switch (tab) {
         case Tab.RealTime:
@@ -810,6 +826,7 @@ function TabContent({
                     maybeUpdate={maybeUpdate}
                     update={update}
                     lang={lang}
+                    highlightedSegments={highlightedSegments}
                 />
             );
         case Tab.Variables:
@@ -855,6 +872,7 @@ function SegmentsTable({
     maybeUpdate,
     update,
     lang,
+    highlightedSegments,
 }: {
     editor: LiveSplit.RunEditorRefMut;
     editorState: LiveSplit.RunEditorStateJson;
@@ -862,6 +880,7 @@ function SegmentsTable({
     maybeUpdate: () => void;
     update: () => LiveSplit.RunEditorStateJson;
     lang: LiveSplit.Language | undefined;
+    highlightedSegments: Set<number>;
 }) {
     const [dragIndex, setDragIndex] = useState(0);
     const [rowState, setRowState] = useState<RowState>(() => ({
@@ -948,15 +967,20 @@ function SegmentsTable({
                         editorState,
                     );
 
+                    const isHighlighted = highlightedSegments.has(segmentIndex);
+                    const rowClassName = [
+                        s.selected === "Selected" || s.selected === "Active"
+                            ? tableClasses.selected
+                            : "",
+                        isHighlighted ? classes.highlightedRow : "",
+                    ]
+                        .filter(Boolean)
+                        .join(" ");
+
                     return (
                         <tr
                             key={segmentIndex}
-                            className={
-                                s.selected === "Selected" ||
-                                s.selected === "Active"
-                                    ? tableClasses.selected
-                                    : ""
-                            }
+                            className={rowClassName}
                             onClick={(e) =>
                                 changeSegmentSelection(
                                     e,
@@ -1161,7 +1185,11 @@ function SegmentsTable({
                                 />
                             </td>
                             <td>
-                                <span className={`${tableClasses.number}`}>
+                                <span
+                                    className={`${tableClasses.number} ${
+                                        isHighlighted ? classes.highlightedAvg : ""
+                                    }`}
+                                >
                                     {(() => {
                                         const eliteCount = getSegmentEliteCount(editorState, segmentIndex);
                                         const segmentTime = parseTimeString(
