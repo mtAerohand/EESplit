@@ -48,6 +48,14 @@ import {
     LeaderboardButtons,
 } from "../components/Leaderboard";
 import { Label, orAutoLang, resolve } from "../../localization";
+import {
+    getSegmentEliteCount,
+    setSegmentEliteCount,
+    getTotalEliteCount,
+    calculateAvgSecondsPerElite,
+    formatAvgSecondsPerElite,
+    parseTimeString,
+} from "../../util/EliteCalculations";
 
 import * as classes from "../../css/RunEditor.module.scss";
 import * as buttonGroupClasses from "../../css/ButtonGroup.module.scss";
@@ -82,6 +90,9 @@ interface RowState {
     comparisonTimes: string[];
     comparisonTimesChanged: boolean[];
     index: number;
+    // Elite counter fields
+    eliteCount: string;
+    eliteCountChanged: boolean;
 }
 
 enum Tab {
@@ -855,6 +866,8 @@ function SegmentsTable({
         segmentTimeChanged: false,
         splitTime: "",
         splitTimeChanged: false,
+        eliteCount: "",
+        eliteCountChanged: false,
     }));
 
     return (
@@ -866,6 +879,8 @@ function SegmentsTable({
                     <th>{resolve(Label.SplitTime, lang)}</th>
                     <th>{resolve(Label.SegmentTime, lang)}</th>
                     <th>{resolve(Label.BestSegment, lang)}</th>
+                    <th>{resolve(Label.EliteCount, lang)}</th>
+                    <th>{resolve(Label.AvgSecondsPerElite, lang)}</th>
                     {editorState.comparison_names.map(
                         (comparison, comparisonIndex) => {
                             return (
@@ -1098,6 +1113,56 @@ function SegmentsTable({
                                         )
                                     }
                                 />
+                            </td>
+                            <td>
+                                <input
+                                    className={`${tableClasses.number} ${tableClasses.textBox}`}
+                                    type="number"
+                                    min="0"
+                                    step="1"
+                                    value={
+                                        segmentIndex === rowState.index &&
+                                        rowState.eliteCountChanged
+                                            ? rowState.eliteCount
+                                            : getSegmentEliteCount(editorState, segmentIndex)
+                                    }
+                                    onFocus={(_) =>
+                                        focusSegment(
+                                            segmentIndex,
+                                            editor,
+                                            rowState,
+                                            setRowState,
+                                            update,
+                                        )
+                                    }
+                                    onChange={(e) =>
+                                        setRowState({
+                                            ...rowState,
+                                            eliteCount: e.target.value,
+                                            eliteCountChanged: true,
+                                        })
+                                    }
+                                    onBlur={(_) =>
+                                        handleEliteCountBlur(
+                                            editor,
+                                            rowState,
+                                            setRowState,
+                                            update,
+                                        )
+                                    }
+                                />
+                            </td>
+                            <td>
+                                <span className={`${tableClasses.number}`}>
+                                    {(() => {
+                                        const eliteCount = getSegmentEliteCount(editorState, segmentIndex);
+                                        const segmentTime = parseTimeString(
+                                            editorState.segments[segmentIndex].segment_time
+                                        );
+                                        const avg = calculateAvgSecondsPerElite(segmentTime, eliteCount);
+                                        return formatAvgSecondsPerElite(avg);
+                                    })()}
+                                </span>
                             </td>
                             {editorState.segments[
                                 segmentIndex
@@ -2627,6 +2692,7 @@ function focusSegment(
         bestSegmentTimeChanged: false,
         comparisonTimes,
         comparisonTimesChanged: comparisonTimes.map(() => false),
+        eliteCountChanged: false,
         index: i,
     });
 }
@@ -2701,6 +2767,22 @@ function handleComparisonTimeBlur(
         const comparisonTimesChanged = [...rowState.comparisonTimesChanged];
         comparisonTimesChanged[comparisonIndex] = false;
         setRowState({ ...rowState, comparisonTimesChanged });
+    }
+}
+
+function handleEliteCountBlur(
+    editor: LiveSplit.RunEditorRefMut,
+    rowState: RowState,
+    setRowState: (rowState: RowState) => void,
+    update: () => void,
+) {
+    if (rowState.eliteCountChanged) {
+        const eliteCount = parseInt(rowState.eliteCount, 10);
+        if (!isNaN(eliteCount) && eliteCount >= 0) {
+            setSegmentEliteCount(editor, rowState.index, eliteCount);
+        }
+        update();
+        setRowState({ ...rowState, eliteCountChanged: false });
     }
 }
 
