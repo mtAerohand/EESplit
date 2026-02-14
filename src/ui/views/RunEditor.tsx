@@ -324,6 +324,14 @@ function View(props: Props & { abortController: AbortController }) {
                                 label={resolve(Label.Attempts, lang)}
                             />
                         </div>
+                        <div className={classes.infoTableCell}>
+                            <div className={classes.textBox}>
+                                <label>{resolve(Label.TotalEliteCount, lang)}</label>
+                                <div className={classes.eliteTotalValue}>
+                                    {getTotalEliteCount(editorState)}体
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
